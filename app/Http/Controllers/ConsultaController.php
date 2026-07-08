@@ -36,6 +36,7 @@ class ConsultaController extends Controller
             'paciente',
             'profissional:id,name',
             'prescricoes.medidas',
+            'exame',
         ]);
 
         return Inertia::render('consultas/show', [
