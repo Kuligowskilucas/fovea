@@ -7,8 +7,11 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import { BlocoAcuidadeVisual } from './bloco-acuidade-visual';
 import { BlocoAutorrefracao } from './bloco-autorrefracao';
 import { BlocoCeratometria } from './bloco-ceratometria';
+import { BlocoRetinoscopia } from './bloco-retinoscopia';
+import { BlocoRxFinal } from './bloco-rx-final';
 import { criarDadosPadrao, mergeDados, type DadosExame } from './exames-tipos';
 
 /** Um item do acordeão; começa fechado. */
@@ -54,6 +57,13 @@ export function ExamesForm({
 
     return (
         <form onSubmit={salvar} className="grid gap-3">
+            <AcordeaoBloco titulo="Acuidade Visual">
+                <BlocoAcuidadeVisual
+                    value={form.data.dados.acuidade_visual}
+                    onChange={(v) => setBloco('acuidade_visual', v)}
+                />
+            </AcordeaoBloco>
+
             <AcordeaoBloco titulo="Autorrefração">
                 <BlocoAutorrefracao
                     value={form.data.dados.autorrefracao}
@@ -68,8 +78,28 @@ export function ExamesForm({
                 />
             </AcordeaoBloco>
 
-            {/* Próximos blocos (Acuidade Visual, Retinoscopia Dinâmica/Estática,
-                RX Final) entram aqui seguindo o mesmo padrão. */}
+            <AcordeaoBloco titulo="Retinoscopia Dinâmica">
+                <BlocoRetinoscopia
+                    idPrefixo="retino-dinamica"
+                    value={form.data.dados.retinoscopia_dinamica}
+                    onChange={(v) => setBloco('retinoscopia_dinamica', v)}
+                />
+            </AcordeaoBloco>
+
+            <AcordeaoBloco titulo="Retinoscopia Estática">
+                <BlocoRetinoscopia
+                    idPrefixo="retino-estatica"
+                    value={form.data.dados.retinoscopia_estatica}
+                    onChange={(v) => setBloco('retinoscopia_estatica', v)}
+                />
+            </AcordeaoBloco>
+
+            <AcordeaoBloco titulo="RX Final">
+                <BlocoRxFinal
+                    value={form.data.dados.rx_final}
+                    onChange={(v) => setBloco('rx_final', v)}
+                />
+            </AcordeaoBloco>
 
             <div>
                 <Button type="submit" disabled={form.processing}>

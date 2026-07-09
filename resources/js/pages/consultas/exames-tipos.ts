@@ -57,7 +57,7 @@ const olhoRetino = (): OlhoRetino => ({ valor: '', av: '' });
 export function criarDadosPadrao(): DadosExame {
     return {
         acuidade_visual: {
-            optotipo: 'Snellen',
+            optotipo: '',
             sem_correcao: { od: avLinha(), oe: avLinha(), ao: avLinha() },
             com_correcao: { od: avLinha(), oe: avLinha(), ao: avLinha() },
             observacoes: '',
