@@ -1,4 +1,4 @@
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import PacienteController from '@/actions/App/Http/Controllers/PacienteController';
 import Heading from '@/components/heading';
@@ -47,9 +47,6 @@ interface Props {
     paciente: Paciente;
 }
 
-type PageProps = {
-    flash: { success: string | null; error: string | null };
-};
 
 const SEXO_LABEL: Record<string, string> = {
     feminino: 'Feminino',
@@ -108,8 +105,6 @@ function Secao({
 }
 
 export default function PacienteShow({ paciente }: Props) {
-    const { flash } = usePage<PageProps>().props;
-
     const endereco = [paciente.logradouro, paciente.numero, paciente.complemento]
         .filter(Boolean)
         .join(', ');
@@ -149,11 +144,6 @@ export default function PacienteShow({ paciente }: Props) {
             <Head title={paciente.nome_completo} />
 
             <div className="flex h-full flex-1 flex-col gap-4 p-4">
-                {flash.success && (
-                    <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
-                        {flash.success}
-                    </div>
-                )}
 
                 <div className="flex flex-wrap items-start justify-between gap-4">
                     <Heading
