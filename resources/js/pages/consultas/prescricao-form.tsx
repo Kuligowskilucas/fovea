@@ -138,7 +138,7 @@ export function PrescricaoForm({ consultaId }: { consultaId: number }) {
         >
             {/* Tipo */}
             <div className="grid gap-1.5">
-                <Label>Tipo de receita</Label>
+                <Label>Tipo de receita <span className="text-destructive">*</span></Label>
                 <div className="inline-flex w-fit gap-1 rounded-lg border border-input p-1">
                     <Segmento ativo={isOculos} onClick={() => trocarTipo('oculos')}>
                         Óculos
@@ -157,7 +157,7 @@ export function PrescricaoForm({ consultaId }: { consultaId: number }) {
             {isOculos && (
                 <div className="grid gap-4 sm:grid-cols-2">
                     <div className="grid gap-1.5">
-                        <Label>Tipo de visão</Label>
+                        <Label>Tipo de visão <span className="text-destructive">*</span></Label>
                         <div className="inline-flex w-fit gap-1 rounded-lg border border-input p-1">
                             <Segmento
                                 ativo={form.data.tipo_visao === 'longe'}

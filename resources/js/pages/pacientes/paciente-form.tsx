@@ -1,7 +1,9 @@
-import type { ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import InputError from '@/components/input-error';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 
 export interface Paciente {
     id: number;
@@ -29,22 +31,20 @@ export interface Paciente {
 
 type Errors = Partial<Record<string, string>>;
 
-function Campo({
-    label,
-    name,
-    error,
-    children,
-    className,
-}: {
+function Campo({ label, name, error, children, className, obrigatorio }: {
     label: string;
     name: string;
     error?: string;
     children: ReactNode;
     className?: string;
+    obrigatorio?: boolean;
 }) {
     return (
         <div className={`grid gap-1.5 ${className ?? ''}`}>
-            <Label htmlFor={name}>{label}</Label>
+            <Label htmlFor={name}>
+                {label}
+                {obrigatorio && <span className="text-destructive"> *</span>}
+            </Label>
             {children}
             <InputError message={error} />
         </div>
@@ -69,14 +69,59 @@ export function PacienteFields({
 }) {
     const v = (k: keyof Paciente) => (paciente?.[k] ?? '') as string;
 
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [buscandoCep, setBuscandoCep] = useState(false);
+
+    async function buscarCep() {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const campo = (name: string) =>
+            container.querySelector<HTMLInputElement>(`#${name}`);
+
+        const cep = (campo('cep')?.value ?? '').replace(/\D/g, '');
+        if (cep.length !== 8) {
+            toast.error('Digite um CEP com 8 dígitos.');
+            return;
+        }
+
+        setBuscandoCep(true);
+        try {
+            const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const dados = await resposta.json();
+
+            if (dados.erro) {
+                toast.error('CEP não encontrado.');
+                return;
+            }
+
+            const preencher = (name: string, valor: string) => {
+                const el = campo(name);
+                if (el) el.value = valor;
+            };
+
+            preencher('logradouro', dados.logradouro ?? '');
+            preencher('bairro', dados.bairro ?? '');
+            preencher('cidade', dados.localidade ?? '');
+            preencher('uf', dados.uf ?? '');
+
+            campo('numero')?.focus();
+        } catch {
+            toast.error('Não foi possível buscar o CEP. Tente novamente.');
+        } finally {
+            setBuscandoCep(false);
+        }
+    }
+
     return (
-        <div className="grid gap-8">
+        <div ref={containerRef} className="grid gap-8">
             <Secao titulo="Identificação">
                 <Campo
                     label="Nome completo"
                     name="nome_completo"
                     error={errors.nome_completo}
                     className="sm:col-span-2"
+                    obrigatorio
                 >
                     <Input id="nome_completo" name="nome_completo" defaultValue={v('nome_completo')} required autoComplete="off" />
                 </Campo>
@@ -141,7 +186,12 @@ export function PacienteFields({
 
             <Secao titulo="Endereço">
                 <Campo label="CEP" name="cep" error={errors.cep}>
-                    <Input id="cep" name="cep" defaultValue={v('cep')} autoComplete="off" />
+                    <div className="flex gap-2">
+                        <Input id="cep" name="cep" defaultValue={v('cep')} autoComplete="off" />
+                        <Button type="button" variant="outline" onClick={buscarCep} disabled={buscandoCep} className="shrink-0">
+                            {buscandoCep ? 'Buscando...' : 'Completar'}
+                        </Button>
+                    </div>
                 </Campo>
                 <Campo label="Logradouro" name="logradouro" error={errors.logradouro}>
                     <Input id="logradouro" name="logradouro" defaultValue={v('logradouro')} autoComplete="off" />

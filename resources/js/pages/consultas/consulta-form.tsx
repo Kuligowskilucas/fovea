@@ -20,22 +20,20 @@ function agoraLocal(): string {
     return new Date(d.getTime() - offset).toISOString().slice(0, 16);
 }
 
-function Campo({
-    label,
-    name,
-    error,
-    children,
-    className,
-}: {
+function Campo({ label, name, error, children, className, obrigatorio }: {
     label: string;
     name: string;
     error?: string;
     children: ReactNode;
     className?: string;
+    obrigatorio?: boolean;
 }) {
     return (
         <div className={`grid gap-1.5 ${className ?? ''}`}>
-            <Label htmlFor={name}>{label}</Label>
+            <Label htmlFor={name}>
+                {label}
+                {obrigatorio && <span className="text-destructive"> *</span>}
+            </Label>
             {children}
             <InputError message={error} />
         </div>
@@ -61,6 +59,7 @@ export function ConsultaFields({
                 label="Data e hora do atendimento"
                 name="atendido_em"
                 error={errors.atendido_em}
+                obrigatorio
             >
                 <Input
                     id="atendido_em"
