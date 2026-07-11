@@ -43,14 +43,14 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">Senha</Label>
                             <PasswordInput
                                 id="password"
                                 name="password"
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"
                                 autoFocus
-                                placeholder="Password"
+                                placeholder="Senha"
                                 passwordrules={passwordRules}
                             />
                             <InputError message={errors.password} />
@@ -81,7 +81,7 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                             data-test="reset-password-button"
                         >
                             {processing && <Spinner />}
-                            Reset password
+                            Resetar senha
                         </Button>
                     </div>
                 )}

@@ -23,18 +23,18 @@ export default function TwoFactorChallenge() {
     }>(() => {
         if (showRecoveryInput) {
             return {
-                title: 'Recovery code',
+                title: 'Código de recuperação',
                 description:
-                    'Please confirm access to your account by entering one of your emergency recovery codes.',
-                toggleText: 'login using an authentication code',
+                    'Confirme o acesso à sua conta inserindo um dos seus códigos de recuperação.',
+                toggleText: 'entrar com um código do aplicativo',
             };
         }
 
         return {
-            title: 'Authentication code',
+            title: 'Código de autenticação',
             description:
-                'Enter the authentication code provided by your authenticator application.',
-            toggleText: 'login using a recovery code',
+                'Digite o código de autenticação fornecido por seu aplicativo autenticador.',
+            toggleText: 'entrar com um código de recuperação',
         };
     }, [showRecoveryInput]);
 
@@ -51,7 +51,7 @@ export default function TwoFactorChallenge() {
 
     return (
         <>
-            <Head title="Two-factor authentication" />
+            <Head title="Autenticação em duas etapas" />
 
             <div className="space-y-6">
                 <Form
@@ -109,11 +109,11 @@ export default function TwoFactorChallenge() {
                                 className="w-full"
                                 disabled={processing}
                             >
-                                Continue
+                                Continuar
                             </Button>
 
                             <div className="text-center text-sm text-muted-foreground">
-                                <span>or you can </span>
+                                <span>ou você pode </span>
                                 <button
                                     type="button"
                                     className="cursor-pointer text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"

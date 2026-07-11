@@ -1,6 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
 import InputError from '@/components/input-error';
-import PasskeyVerify from '@/components/passkey-verify';
+// import PasskeyVerify from '@/components/passkey-verify';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -19,20 +19,13 @@ type Props = {
 export default function Login({ status, canResetPassword }: Props) {
     return (
         <>
-            <Head title="Log in" />
-
-            <PasskeyVerify />
-
-            <Form
-                {...store.form()}
-                resetOnSuccess={['password']}
-                className="flex flex-col gap-6"
-            >
+            <Head title="Entrar" />
+            <Form {...store.form()} resetOnSuccess={['password']} className="flex flex-col gap-6">
                 {({ processing, errors }) => (
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email">E-mail</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -41,21 +34,21 @@ export default function Login({ status, canResetPassword }: Props) {
                                     autoFocus
                                     tabIndex={1}
                                     autoComplete="email"
-                                    placeholder="email@example.com"
+                                    placeholder="email@exemplo.com"
                                 />
                                 <InputError message={errors.email} />
                             </div>
 
                             <div className="grid gap-2">
                                 <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
+                                    <Label htmlFor="password">Senha</Label>
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
                                             className="ml-auto text-sm"
                                             tabIndex={5}
                                         >
-                                            Forgot your password?
+                                            Esqueceu a senha?
                                         </TextLink>
                                     )}
                                 </div>
@@ -65,7 +58,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                     required
                                     tabIndex={2}
                                     autoComplete="current-password"
-                                    placeholder="Password"
+                                    placeholder="Senha"
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -76,7 +69,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                     name="remember"
                                     tabIndex={3}
                                 />
-                                <Label htmlFor="remember">Remember me</Label>
+                                <Label htmlFor="remember">Lembrar de mim</Label>
                             </div>
 
                             <Button
@@ -87,7 +80,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                 data-test="login-button"
                             >
                                 {processing && <Spinner />}
-                                Log in
+                                Entrar
                             </Button>
                         </div>
                     </>
@@ -104,6 +97,6 @@ export default function Login({ status, canResetPassword }: Props) {
 }
 
 Login.layout = {
-    title: 'Log in to your account',
-    description: 'Enter your email and password below to log in',
+    title: 'Acesse sua conta',
+    description: 'Informe seu e-mail e senha para entrar',
 };

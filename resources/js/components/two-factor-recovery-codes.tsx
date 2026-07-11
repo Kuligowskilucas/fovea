@@ -57,11 +57,10 @@ export default function TwoFactorRecoveryCodes({
             <CardHeader>
                 <CardTitle className="flex gap-3">
                     <LockKeyhole className="size-4" aria-hidden="true" />
-                    2FA recovery codes
+                    Códigos de recuperação
                 </CardTitle>
                 <CardDescription>
-                    Recovery codes let you regain access if you lose your 2FA
-                    device. Store them in a secure password manager.
+                    Os códigos de recuperação permitem que você recupere o acesso se perder o dispositivo 2FA. Armazene-os em um gerenciador de senhas seguro.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -76,7 +75,7 @@ export default function TwoFactorRecoveryCodes({
                             className="size-4"
                             aria-hidden="true"
                         />
-                        {codesAreVisible ? 'Hide' : 'View'} recovery codes
+                        {codesAreVisible ? 'Ocultar' : 'Visualizar'} códigos de recuperação
                     </Button>
 
                     {canRegenerateCodes && (
@@ -92,7 +91,7 @@ export default function TwoFactorRecoveryCodes({
                                     disabled={processing}
                                     aria-describedby="regenerate-warning"
                                 >
-                                    <RefreshCw /> Regenerate codes
+                                    <RefreshCw /> Regenerar códigos
                                 </Button>
                             )}
                         </Form>
@@ -145,11 +144,9 @@ export default function TwoFactorRecoveryCodes({
 
                                 <div className="text-xs text-muted-foreground select-none">
                                     <p id="regenerate-warning">
-                                        Each recovery code can be used once to
-                                        access your account and will be removed
-                                        after use. If you need more, click{' '}
+                                        Cada código pode ser usado uma única vez e é descartado após o uso. Se precisar de mais, clique em Gerar novos códigos acima."
                                         <span className="font-bold">
-                                            Regenerate codes
+                                            Gerar novos códigos
                                         </span>{' '}
                                         above.
                                     </p>
