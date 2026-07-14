@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { LayoutGrid, Users } from 'lucide-react';
+import { LayoutGrid, Users, CalendarClock } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -14,7 +14,9 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+
 import { index as pacientesIndex } from '@/routes/pacientes';
+import { index as consultasIndex } from '@/routes/consultas';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
@@ -27,6 +29,11 @@ const mainNavItems: NavItem[] = [
         title: 'Pacientes',
         href: pacientesIndex(),
         icon: Users,
+    },
+    {
+        title: 'Consultas',
+        href: consultasIndex(),
+        icon: CalendarClock,
     },
 ];
 

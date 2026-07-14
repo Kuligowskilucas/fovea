@@ -7,9 +7,41 @@ use App\Http\Requests\UpdateConsultaRequest;
 use App\Models\Consulta;
 use App\Models\Paciente;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
 
 class ConsultaController extends Controller
 {
+
+    public function index(Request $request)
+    {
+        $filtros = $request->validate([
+            'q' => ['nullable', 'string', 'max:100'],
+            'de' => ['nullable', 'date'],
+            'ate' => ['nullable', 'date'],
+        ]);
+
+        $q = trim((string) ($filtros['q'] ?? ''));
+        $de = $filtros['de'] ?? null;
+        $ate = $filtros['ate'] ?? null;
+
+        $consultas = Consulta::query()
+            ->with('paciente:id,nome_completo')
+            ->when($q !== '', fn ($query) => $query->whereHas(
+                'paciente',
+                fn ($sub) => $sub->where('nome_completo', 'ilike', "%{$q}%")
+            ))
+            ->when($de, fn ($query) => $query->whereDate('atendido_em', '>=', $de))
+            ->when($ate, fn ($query) => $query->whereDate('atendido_em', '<=', $ate))
+            ->latest('atendido_em')
+            ->paginate(15)
+            ->withQueryString();
+
+        return Inertia::render('consultas/index', [
+            'consultas' => $consultas,
+            'filters' => ['q' => $q, 'de' => $de, 'ate' => $ate],
+        ]);
+    }
+    
     public function create(Paciente $paciente)
     {
         return Inertia::render('consultas/create', [
@@ -21,7 +53,7 @@ class ConsultaController extends Controller
     {
         $data = $request->validated();
         $data['procedimento'] ??= 'Consulta';
-        $data['user_id'] = $request->user()->id; // profissional = usuário logado
+        $data['user_id'] = $request->user()->id;
 
         $consulta = $paciente->consultas()->create($data);
 
