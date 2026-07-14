@@ -17,7 +17,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('pacientes.consultas', ConsultaController::class)
         ->shallow()->except(['index']);
     Route::resource('consultas.prescricoes', PrescricaoController::class)
-        ->shallow()->only(['store', 'update', 'destroy']);
+        ->shallow()->only(['store', 'update', 'destroy'])
+        ->parameters(['prescricoes' => 'prescricao']);
     Route::get('prescricoes/{prescricao}/imprimir', [PrescricaoController::class, 'imprimir'])
         ->name('prescricoes.imprimir');
 

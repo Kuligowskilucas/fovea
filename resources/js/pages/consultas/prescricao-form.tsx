@@ -5,6 +5,7 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { CampoDioptria, CampoNumero } from './campo-dioptria';
 
 type Tipo = 'oculos' | 'lente_contato';
 type Olho = 'OD' | 'OE';
@@ -177,14 +178,11 @@ export function PrescricaoForm({ consultaId }: { consultaId: number }) {
 
                     <div className="grid gap-1.5">
                         <Label htmlFor="adicao">Adição</Label>
-                        <Input
+                        <CampoDioptria
                             id="adicao"
-                            type="number"
-                            step="any"
-                            min="-99.99"
-                            max="99.99"
+                            sinal="toggle"
                             value={form.data.adicao}
-                            onChange={(e) => form.setData('adicao', e.target.value)}
+                            onChange={(v) => form.setData('adicao', v)}
                         />
                         <InputError message={err.adicao} />
                     </div>
@@ -207,14 +205,11 @@ export function PrescricaoForm({ consultaId }: { consultaId: number }) {
                                 <Label htmlFor={`esf-${i}`} className="text-xs">
                                     Esférico
                                 </Label>
-                                <Input
+                                <CampoDioptria
                                     id={`esf-${i}`}
-                                    type="number"
-                                    step="any"
-                                    min="-99.99"
-                                    max="99.99"
+                                    sinal="toggle"
                                     value={medida.esferico}
-                                    onChange={(e) => setMedida(i, 'esferico', e.target.value)}
+                                    onChange={(v) => setMedida(i, 'esferico', v)}
                                 />
                                 <InputError message={err[`medidas.${i}.esferico`]} />
                             </div>
@@ -222,14 +217,11 @@ export function PrescricaoForm({ consultaId }: { consultaId: number }) {
                                 <Label htmlFor={`cil-${i}`} className="text-xs">
                                     Cilíndrico
                                 </Label>
-                                <Input
+                                <CampoDioptria
                                     id={`cil-${i}`}
-                                    type="number"
-                                    step="any"
-                                    min="-99.99"
-                                    max="99.99"
+                                    sinal="negativo"
                                     value={medida.cilindrico}
-                                    onChange={(e) => setMedida(i, 'cilindrico', e.target.value)}
+                                    onChange={(v) => setMedida(i, 'cilindrico', v)}
                                 />
                                 <InputError message={err[`medidas.${i}.cilindrico`]} />
                             </div>
@@ -237,14 +229,10 @@ export function PrescricaoForm({ consultaId }: { consultaId: number }) {
                                 <Label htmlFor={`eixo-${i}`} className="text-xs">
                                     Eixo
                                 </Label>
-                                <Input
+                                <CampoNumero
                                     id={`eixo-${i}`}
-                                    type="number"
-                                    step="1"
-                                    min="0"
-                                    max="180"
                                     value={medida.eixo}
-                                    onChange={(e) => setMedida(i, 'eixo', e.target.value)}
+                                    onChange={(v) => setMedida(i, 'eixo', v)}
                                 />
                                 <InputError message={err[`medidas.${i}.eixo`]} />
                             </div>
@@ -280,14 +268,11 @@ export function PrescricaoForm({ consultaId }: { consultaId: number }) {
                                     <Label htmlFor={`dnp-${i}`} className="text-xs">
                                         DNP
                                     </Label>
-                                    <Input
+                                    <CampoNumero
                                         id={`dnp-${i}`}
-                                        type="number"
-                                        step="any"
-                                        min="0"
-                                        max="999.9"
+                                        decimal
                                         value={medida.dnp}
-                                        onChange={(e) => setMedida(i, 'dnp', e.target.value)}
+                                        onChange={(v) => setMedida(i, 'dnp', v)}
                                     />
                                     <InputError message={err[`medidas.${i}.dnp`]} />
                                 </div>
