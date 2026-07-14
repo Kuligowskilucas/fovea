@@ -48,15 +48,19 @@ class PacienteController extends Controller
     }
 
     public function show(Paciente $paciente)
-    {
-        $paciente->load([
-            'consultas' => fn ($query) => $query->latest('atendido_em'),
-        ]);
-
-        return Inertia::render('pacientes/show', [
-            'paciente' => $paciente,
-        ]);
-    }
+        {
+            $paciente->load([
+                'consultas' => fn ($query) => $query->latest('atendido_em'),
+            ]);
+    
+            $refracoes = $paciente->refracoes();
+    
+            return Inertia::render('pacientes/show', [
+                'paciente' => $paciente,
+                'ultima_refracao' => $refracoes->first(),
+                'refracoes' => $refracoes,
+            ]);
+        }
 
     public function edit(Paciente $paciente)
     {

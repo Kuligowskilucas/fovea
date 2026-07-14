@@ -1,11 +1,12 @@
 import { useForm } from '@inertiajs/react';
-import { useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import PrescricaoController from '@/actions/App/Http/Controllers/PrescricaoController';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CampoDioptria, CampoNumero } from './campo-dioptria';
+
 
 type Tipo = 'oculos' | 'lente_contato';
 type Olho = 'OD' | 'OE';
@@ -30,6 +31,7 @@ type PrescricaoData = {
     medidas: MedidaData[];
 };
 
+
 function medidaVazia(olho: Olho): MedidaData {
     return { olho, esferico: '', cilindrico: '', eixo: '', av: '', prisma: '', dnp: '' };
 }
@@ -43,6 +45,56 @@ const INICIAL: PrescricaoData = {
     observacoes: '',
     medidas: [medidaVazia('OD'), medidaVazia('OE')],
 };
+
+type MedidaSalva = {
+    olho: Olho;
+    esferico: string | null;
+    cilindrico: string | null;
+    eixo: number | null;
+    av: string | null;
+    prisma: string | null;
+    dnp: string | null;
+};
+
+export type PrescricaoRepetir = {
+    tipo: Tipo;
+    tipo_visao: string | null;
+    adicao: string | null;
+    lente: string | null;
+    observacoes: string | null;
+    medidas: MedidaSalva[];
+};
+
+const str = (v: string | number | null | undefined): string =>
+    v === null || v === undefined ? '' : String(v);
+
+
+/** Converte uma prescrição salva nos dados editáveis do formulário.
+ *  retorno_em fica em branco de propósito — é uma receita nova. */
+function paraFormulario(p: PrescricaoRepetir): PrescricaoData {
+    const medidaDe = (olho: Olho): MedidaData => {
+        const m = p.medidas.find((x) => x.olho === olho);
+        return {
+            olho,
+            esferico: str(m?.esferico),
+            cilindrico: str(m?.cilindrico),
+            eixo: str(m?.eixo),
+            av: str(m?.av),
+            prisma: str(m?.prisma),
+            dnp: str(m?.dnp),
+        };
+    };
+
+    return {
+        tipo: p.tipo,
+        tipo_visao: str(p.tipo_visao),
+        adicao: str(p.adicao),
+        lente: str(p.lente),
+        retorno_em: '',
+        observacoes: str(p.observacoes),
+        medidas: [medidaDe('OD'), medidaDe('OE')],
+    };
+}
 
 /** Botão de segmento (toggle) reutilizável. */
 function Segmento({
@@ -70,11 +122,22 @@ function Segmento({
     );
 }
 
-export function PrescricaoForm({ consultaId }: { consultaId: number }) {
+export function PrescricaoForm({consultaId, preencherCom}: {consultaId: number; preencherCom?: { dados: PrescricaoRepetir; nonce: number } | null;}) {
     const [aberto, setAberto] = useState(false);
     const form = useForm(INICIAL);
     const err = form.errors as Record<string, string>;
     const isOculos = form.data.tipo === 'oculos';
+
+    // Quando o pai pede pra repetir uma receita, preenche e abre.
+    // O `nonce` garante que repetir a MESMA receita duas vezes reative o efeito.
+    useEffect(() => {
+        if (preencherCom) {
+            form.setData(paraFormulario(preencherCom.dados));
+            form.clearErrors();
+            setAberto(true);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [preencherCom?.nonce]);
 
     function setMedida(i: number, campo: keyof MedidaData, valor: string) {
         form.setData(

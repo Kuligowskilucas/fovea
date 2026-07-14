@@ -1,5 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import ConsultaController from '@/actions/App/Http/Controllers/ConsultaController';
 import PrescricaoController from '@/actions/App/Http/Controllers/PrescricaoController';
 import Heading from '@/components/heading';
@@ -8,8 +8,9 @@ import { dashboard } from '@/routes';
 import { index, show as pacienteShow } from '@/routes/pacientes';
 import { edit } from '@/routes/consultas';
 import { imprimir } from '@/routes/prescricoes';
-import { PrescricaoForm } from './prescricao-form';
+import { PrescricaoForm, type PrescricaoRepetir } from './prescricao-form';
 import { ExamesForm } from './exames-form';
+
 
 interface Medida {
     olho: 'OD' | 'OE';
@@ -75,6 +76,53 @@ function formatarDataHora(iso: string): string {
     });
 }
 
+function campoStr(obj: unknown, chave: string): string | null {
+    if (obj && typeof obj === 'object' && chave in obj) {
+        const v = (obj as Record<string, unknown>)[chave];
+        return v === null || v === undefined || v === '' ? null : String(v);
+    }
+    return null;
+}
+
+function rxFinalParaPrescricao(exame: { dados: unknown } | null): PrescricaoRepetir | null {
+    if (!exame?.dados || typeof exame.dados !== 'object') return null;
+
+    const rx = (exame.dados as Record<string, unknown>).rx_final;
+    if (!rx || typeof rx !== 'object') return null;
+
+    const olho = (lado: 'od' | 'oe') => {
+        const o = (rx as Record<string, unknown>)[lado];
+        return {
+            olho: (lado === 'od' ? 'OD' : 'OE') as 'OD' | 'OE',
+            esferico: campoStr(o, 'esferico'),
+            cilindrico: campoStr(o, 'cilindrico'),
+            eixo: campoStr(o, 'eixo') ? Number(campoStr(o, 'eixo')) : null,
+            av: campoStr(o, 'av'),
+            prisma: null,
+            dnp: null,
+        };
+    };
+
+    const od = olho('od');
+    const oe = olho('oe');
+
+    const temGrau = od.esferico || od.cilindrico || oe.esferico || oe.cilindrico;
+    if (!temGrau) return null;
+
+    const tipoLente = campoStr(rx, 'tipo_lente');
+    const tratamento = campoStr(rx, 'tratamento');
+    const lente = [tipoLente, tratamento].filter(Boolean).join(' · ') || null;
+
+    return {
+        tipo: 'oculos',
+        tipo_visao: 'longe',
+        adicao: campoStr(rx, 'adicao'),
+        lente,
+        observacoes: null,
+        medidas: [od, oe],
+    };
+}
+
 function Dado({ label, valor, full }: { label: string; valor: ReactNode; full?: boolean }) {
     if (valor === null || valor === undefined || valor === '') {
         return null;
@@ -138,7 +186,7 @@ function GradeMedidas({ prescricao }: { prescricao: Prescricao }) {
     );
 }
 
-function CartaoPrescricao({ prescricao }: { prescricao: Prescricao }) {
+function CartaoPrescricao({ prescricao, onRepetir }: { prescricao: Prescricao; onRepetir: (p: Prescricao) => void;}) {
     const isOculos = prescricao.tipo === 'oculos';
 
     function remover() {
@@ -155,6 +203,9 @@ function CartaoPrescricao({ prescricao }: { prescricao: Prescricao }) {
                     {TIPO_LABEL[prescricao.tipo]}
                 </span>
                 <div className="flex gap-2">
+                    <Button variant="secondary" size="sm" onClick={() => onRepetir(prescricao)}>
+                        Repetir
+                    </Button>
                     <Button variant="secondary" size="sm" asChild>
                         <a href={imprimir(prescricao.id).url} target="_blank" rel="noopener">
                             Imprimir
@@ -193,6 +244,41 @@ function CartaoPrescricao({ prescricao }: { prescricao: Prescricao }) {
 
 export default function ConsultaShow({ consulta }: Props) {
     const { flash } = usePage<PageProps>().props;
+
+    const [repetir, setRepetir] = useState<{ dados: PrescricaoRepetir; nonce: number } | null>(null);
+
+    function repetirPrescricao(p: Prescricao) {
+        setRepetir({
+            dados: {
+                tipo: p.tipo,
+                tipo_visao: p.tipo_visao,
+                adicao: p.adicao,
+                lente: p.lente,
+                observacoes: p.observacoes,
+                medidas: p.medidas,
+            },
+            nonce: Date.now(),
+        });
+        requestAnimationFrame(() => {
+            document.getElementById('form-nova-receita')?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+            });
+        });
+    }
+
+    const rxFinal = rxFinalParaPrescricao(consulta.exame);
+
+    function puxarRxFinal() {
+        if (!rxFinal) return;
+        setRepetir({ dados: rxFinal, nonce: Date.now() });
+        requestAnimationFrame(() => {
+            document.getElementById('form-nova-receita')?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+            });
+        });
+    }
 
     function arquivar() {
         if (
@@ -271,12 +357,24 @@ export default function ConsultaShow({ consulta }: Props) {
                     )}
 
                     {consulta.prescricoes.map((prescricao) => (
-                        <CartaoPrescricao key={prescricao.id} prescricao={prescricao} />
+                        <CartaoPrescricao key={prescricao.id} prescricao={prescricao} onRepetir={repetirPrescricao}/>
                     ))}
+
+                    {rxFinal && (
+                        <button
+                            type="button"
+                            onClick={puxarRxFinal}
+                            className="rounded-xl border border-primary/40 bg-primary/5 p-4 text-center text-sm text-primary transition-colors hover:bg-primary/10"
+                        >
+                            Clique aqui para usar o RX Final do exame nesta receita
+                        </button>
+                    )}
 
                     {/* Formulário de nova receita: toggle óculos/lente + grade OD/OE.
                         Grava via PrescricaoController.store (back() → recarrega a lista). */}
-                    <PrescricaoForm consultaId={consulta.id} />
+                    <div id="form-nova-receita">
+                        <PrescricaoForm consultaId={consulta.id} preencherCom={repetir} />
+                    </div>
                 </section>
 
                 <div>

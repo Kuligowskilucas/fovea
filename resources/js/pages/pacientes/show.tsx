@@ -16,6 +16,23 @@ interface Consulta {
     observacoes: string | null;
 }
 
+interface MedidaRefracao {
+    esferico: string | null;
+    cilindrico: string | null;
+    eixo: number | null;
+    av: string | null;
+}
+
+interface Refracao {
+    prescricao_id: number;
+    consulta_id: number;
+    atendido_em: string | null;
+    tipo_visao: 'longe' | 'longe_perto' | null;
+    adicao: string | null;
+    od: MedidaRefracao | null;
+    oe: MedidaRefracao | null;
+}
+
 interface Paciente {
     id: number;
     nome_completo: string;
@@ -45,6 +62,8 @@ interface Paciente {
 
 interface Props {
     paciente: Paciente;
+    ultima_refracao: Refracao | null;
+    refracoes: Refracao[];
 }
 
 
@@ -66,6 +85,23 @@ function formatarDataHora(iso: string): string {
         timeStyle: 'short',
         timeZone: 'UTC',
     });
+}
+
+/** Formata dioptria com sinal e vírgula decimal: -1.25 → "−1,25". Vazio → "—". */
+function grau(v: string | number | null): string {
+    if (v === null || v === '') return '—';
+    const n = Number(v);
+    if (Number.isNaN(n)) return String(v);
+    const s = n > 0 ? `+${n.toFixed(2)}` : n.toFixed(2);
+    return s.replace('.', ',');
+}
+
+/** Monta a notação clínica de um olho: "−3,50 −1,00 180°". */
+function notacao(m: MedidaRefracao | null): string {
+    if (!m) return '—';
+    const partes = [grau(m.esferico), grau(m.cilindrico)];
+    if (m.eixo !== null) partes.push(`${m.eixo}°`);
+    return partes.join('  ');
 }
 
 /** Renderiza um par label/valor; retorna null se o valor for vazio. */
@@ -104,7 +140,7 @@ function Secao({
     );
 }
 
-export default function PacienteShow({ paciente }: Props) {
+export default function PacienteShow({ paciente, ultima_refracao, refracoes }: Props) {
     const endereco = [paciente.logradouro, paciente.numero, paciente.complemento]
         .filter(Boolean)
         .join(', ');
@@ -210,6 +246,90 @@ export default function PacienteShow({ paciente }: Props) {
                 <Secao titulo="Observações" mostrar={Boolean(paciente.observacoes)}>
                     <Dado label="Observações" valor={paciente.observacoes} full />
                 </Secao>
+
+                {ultima_refracao && (
+                    <section className="grid gap-3">
+                        <h2 className="text-sm font-medium text-muted-foreground">
+                            Última refração
+                        </h2>
+                        <div className="grid gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                                <span className="text-xs text-muted-foreground">
+                                    {ultima_refracao.atendido_em
+                                        ? formatarData(ultima_refracao.atendido_em)
+                                        : 'Data não informada'}
+                                </span>
+                                <Link
+                                    href={consultaShow(ultima_refracao.consulta_id)}
+                                    className="text-xs text-primary hover:underline"
+                                >
+                                    Ver consulta
+                                </Link>
+                            </div>
+                            <div className="grid gap-2 sm:grid-cols-2">
+                                <div className="grid gap-0.5">
+                                    <span className="text-xs font-medium text-muted-foreground">OD</span>
+                                    <span className="font-mono text-sm">
+                                        {notacao(ultima_refracao.od)}
+                                    </span>
+                                </div>
+                                <div className="grid gap-0.5">
+                                    <span className="text-xs font-medium text-muted-foreground">OE</span>
+                                    <span className="font-mono text-sm">
+                                        {notacao(ultima_refracao.oe)}
+                                    </span>
+                                </div>
+                            </div>
+                            {ultima_refracao.adicao && (
+                                <span className="text-sm text-muted-foreground">
+                                    Adição: {grau(ultima_refracao.adicao)}
+                                </span>
+                            )}
+                        </div>
+                    </section>
+                )}
+
+                {refracoes.length > 1 && (
+                    <section className="grid gap-3">
+                        <h2 className="text-sm font-medium text-muted-foreground">
+                            Evolução do grau
+                        </h2>
+                        <div className="overflow-x-auto rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+                            <table className="w-full min-w-[32rem] text-sm">
+                                <thead>
+                                    <tr className="text-xs text-muted-foreground">
+                                        <th className="p-2 text-left font-medium">Data</th>
+                                        <th className="p-2 text-left font-medium">OD</th>
+                                        <th className="p-2 text-left font-medium">OE</th>
+                                        <th className="p-2 text-left font-medium">Adição</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {refracoes.map((r) => (
+                                        <tr
+                                            key={r.prescricao_id}
+                                            className="border-t border-sidebar-border/70 dark:border-sidebar-border"
+                                        >
+                                            <td className="p-2 whitespace-nowrap">
+                                                <Link
+                                                    href={consultaShow(r.consulta_id)}
+                                                    className="text-primary hover:underline"
+                                                >
+                                                    {r.atendido_em ? formatarData(r.atendido_em) : '—'}
+                                                </Link>
+                                            </td>
+                                            <td className="p-2 font-mono whitespace-nowrap">{notacao(r.od)}</td>
+                                            <td className="p-2 font-mono whitespace-nowrap">{notacao(r.oe)}</td>
+                                            <td className="p-2 font-mono whitespace-nowrap">
+                                                {r.adicao ? grau(r.adicao) : '—'}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                )}
 
                 <section className="grid gap-3">
                     <h2 className="text-sm font-medium text-muted-foreground">
