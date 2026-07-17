@@ -3,8 +3,8 @@ import ConsultaController from '@/actions/App/Http/Controllers/ConsultaControlle
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { dashboard } from '@/routes';
-import { index } from '@/routes/pacientes';
-import { show } from '@/routes/consultas';
+import { index, show as pacienteShow } from '@/routes/pacientes';
+import { show, edit } from '@/routes/consultas';
 import { ConsultaFields, type Consulta } from './consulta-form';
 
 interface Props {
@@ -44,10 +44,15 @@ export default function ConsultaEdit({ consulta }: Props) {
     );
 }
 
-ConsultaEdit.layout = {
+ConsultaEdit.layout = (props: Props) => ({
     breadcrumbs: [
         { title: 'Dashboard', href: dashboard() },
         { title: 'Pacientes', href: index() },
-        { title: 'Editar consulta', href: index() },
+        {
+            title: props.consulta.paciente.nome_completo,
+            href: pacienteShow(props.consulta.paciente.id),
+        },
+        { title: 'Consulta', href: show(props.consulta.id) },
+        { title: 'Editar', href: edit(props.consulta.id) },
     ],
-};
+});

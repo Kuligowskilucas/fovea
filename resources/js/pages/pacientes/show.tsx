@@ -4,7 +4,7 @@ import PacienteController from '@/actions/App/Http/Controllers/PacienteControlle
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { dashboard } from '@/routes';
-import { edit, index } from '@/routes/pacientes';
+import { edit, index, show as pacienteShow } from '@/routes/pacientes';
 import { create as novaConsulta } from '@/routes/pacientes/consultas';
 import { show as consultaShow } from '@/routes/consultas';
 
@@ -382,10 +382,10 @@ export default function PacienteShow({ paciente, ultima_refracao, refracoes }: P
     );
 }
 
-PacienteShow.layout = {
+PacienteShow.layout = (props: Props) => ({
     breadcrumbs: [
         { title: 'Dashboard', href: dashboard() },
         { title: 'Pacientes', href: index() },
-        { title: 'Detalhe', href: index() },
+        { title: props.paciente.nome_completo, href: pacienteShow(props.paciente.id) },
     ],
-};
+});

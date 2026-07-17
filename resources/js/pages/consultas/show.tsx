@@ -6,7 +6,7 @@ import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { dashboard } from '@/routes';
 import { index, show as pacienteShow } from '@/routes/pacientes';
-import { edit } from '@/routes/consultas';
+import { edit, show as consultaShow } from '@/routes/consultas';
 import { imprimir } from '@/routes/prescricoes';
 import { PrescricaoForm, type PrescricaoRepetir } from './prescricao-form';
 import { ExamesForm } from './exames-form';
@@ -389,10 +389,14 @@ export default function ConsultaShow({ consulta }: Props) {
     );
 }
 
-ConsultaShow.layout = {
+ConsultaShow.layout = (props: Props) => ({
     breadcrumbs: [
         { title: 'Dashboard', href: dashboard() },
         { title: 'Pacientes', href: index() },
-        { title: 'Consulta', href: index() },
+        {
+            title: props.consulta.paciente.nome_completo,
+            href: pacienteShow(props.consulta.paciente.id),
+        },
+        { title: 'Consulta', href: consultaShow(props.consulta.id) },
     ],
-};
+});

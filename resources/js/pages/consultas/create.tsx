@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { dashboard } from '@/routes';
 import { index, show } from '@/routes/pacientes';
 import { ConsultaFields } from './consulta-form';
+import { create as novaConsulta } from '@/routes/pacientes/consultas';
 
 interface Props {
     paciente: { id: number; nome_completo: string };
@@ -43,10 +44,11 @@ export default function ConsultaCreate({ paciente }: Props) {
     );
 }
 
-ConsultaCreate.layout = {
+ConsultaCreate.layout = (props: Props) => ({
     breadcrumbs: [
         { title: 'Dashboard', href: dashboard() },
         { title: 'Pacientes', href: index() },
-        { title: 'Nova consulta', href: index() },
+        { title: props.paciente.nome_completo, href: show(props.paciente.id) },
+        { title: 'Nova consulta', href: novaConsulta(props.paciente.id) },
     ],
-};
+});

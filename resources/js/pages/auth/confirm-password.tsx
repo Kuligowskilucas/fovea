@@ -16,23 +16,12 @@ export default function ConfirmPassword() {
                     <div className="space-y-6">
                         <div className="grid gap-2">
                             <Label htmlFor="password">Senha</Label>
-                            <PasswordInput
-                                id="password"
-                                name="password"
-                                placeholder="Senha"
-                                autoComplete="current-password"
-                                autoFocus
-                            />
-
+                            <PasswordInput id="password" name="password" placeholder="Senha" autoComplete="current-password" autoFocus/>
                             <InputError message={errors.password} />
                         </div>
 
                         <div className="flex items-center">
-                            <Button
-                                className="w-full"
-                                disabled={processing}
-                                data-test="confirm-password-button"
-                            >
+                            <Button className="w-full" disabled={processing} data-test="confirm-password-button">
                                 {processing && <Spinner />}
                                 Confirme sua senha
                             </Button>

@@ -3,7 +3,7 @@ import PacienteController from '@/actions/App/Http/Controllers/PacienteControlle
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { dashboard } from '@/routes';
-import { index, show } from '@/routes/pacientes';
+import { index, show, edit } from '@/routes/pacientes';
 import { PacienteFields, type Paciente } from './paciente-form';
 
 export default function PacienteEdit({ paciente }: { paciente: Paciente }) {
@@ -35,9 +35,11 @@ export default function PacienteEdit({ paciente }: { paciente: Paciente }) {
     );
 }
 
-PacienteEdit.layout = {
+PacienteEdit.layout = (props: { paciente: Paciente }) => ({
     breadcrumbs: [
         { title: 'Dashboard', href: dashboard() },
         { title: 'Pacientes', href: index() },
+        { title: props.paciente.nome_completo, href: show(props.paciente.id) },
+        { title: 'Editar', href: edit(props.paciente.id) },
     ],
-};
+});
