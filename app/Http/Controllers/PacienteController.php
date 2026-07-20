@@ -86,4 +86,13 @@ class PacienteController extends Controller
             ->route('pacientes.index')
             ->with('success', 'Paciente arquivado.');
     }
+
+    public function restaurar(Paciente $paciente)
+    {
+        $paciente->restore();
+
+        return redirect()
+            ->route('arquivados.index')
+            ->with('success', 'Paciente restaurado.');
+    }
 }

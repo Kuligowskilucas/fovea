@@ -100,7 +100,7 @@ class ConsultaController extends Controller
     public function destroy(Consulta $consulta)
     {
         $pacienteId = $consulta->paciente_id;
-        $consulta->delete(); // soft delete
+        $consulta->delete(); 
 
         return redirect()
             ->route('pacientes.show', $pacienteId)

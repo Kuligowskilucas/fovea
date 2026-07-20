@@ -10,6 +10,7 @@ import { edit, show as consultaShow } from '@/routes/consultas';
 import { imprimir } from '@/routes/prescricoes';
 import { PrescricaoForm, type PrescricaoRepetir } from './prescricao-form';
 import { ExamesForm } from './exames-form';
+import { useConfirm } from '@/hooks/use-confirm';
 
 
 interface Medida {
@@ -187,12 +188,19 @@ function GradeMedidas({ prescricao }: { prescricao: Prescricao }) {
 }
 
 function CartaoPrescricao({ prescricao, onRepetir }: { prescricao: Prescricao; onRepetir: (p: Prescricao) => void;}) {
+    const confirm = useConfirm();
     const isOculos = prescricao.tipo === 'oculos';
 
-    function remover() {
-        if (!confirm('Remover esta prescrição? A ação não pode ser desfeita.')) {
-            return;
-        }
+    async function remover() {
+        const ok = await confirm({
+            title: 'Remover prescrição?',
+            description: 'A ação não pode ser desfeita.',
+            confirmText: 'Remover',
+            destructive: true,
+        });
+
+        if (!ok) return;
+
         router.delete(PrescricaoController.destroy.url(prescricao.id));
     }
 
@@ -244,6 +252,7 @@ function CartaoPrescricao({ prescricao, onRepetir }: { prescricao: Prescricao; o
 
 export default function ConsultaShow({ consulta }: Props) {
     const { flash } = usePage<PageProps>().props;
+    const confirm = useConfirm();
 
     const [repetir, setRepetir] = useState<{ dados: PrescricaoRepetir; nonce: number } | null>(null);
 
@@ -280,14 +289,16 @@ export default function ConsultaShow({ consulta }: Props) {
         });
     }
 
-    function arquivar() {
-        if (
-            !confirm(
-                'Arquivar esta consulta? Ela deixará de aparecer no histórico, mas os dados serão mantidos.',
-            )
-        ) {
-            return;
-        }
+    async function arquivar() {
+        const ok = await confirm({
+            title: 'Arquivar consulta?',
+            description: 'Ela deixará de aparecer no histórico, mas os dados serão mantidos.',
+            confirmText: 'Arquivar',
+            destructive: true,
+        });
+
+        if (!ok) return;
+
         router.delete(ConsultaController.destroy.url(consulta.id));
     }
 

@@ -7,6 +7,7 @@ import { dashboard } from '@/routes';
 import { edit, index, show as pacienteShow } from '@/routes/pacientes';
 import { create as novaConsulta } from '@/routes/pacientes/consultas';
 import { show as consultaShow } from '@/routes/consultas';
+import { useConfirm } from '@/hooks/use-confirm';
 
 interface Consulta {
     id: number;
@@ -141,6 +142,7 @@ function Secao({
 }
 
 export default function PacienteShow({ paciente, ultima_refracao, refracoes }: Props) {
+    const confirm = useConfirm();
     const endereco = [paciente.logradouro, paciente.numero, paciente.complemento]
         .filter(Boolean)
         .join(', ');
@@ -163,14 +165,16 @@ export default function PacienteShow({ paciente, ultima_refracao, refracoes }: P
     const temResponsavel = Boolean(paciente.responsavel_nome || paciente.responsavel_cpf);
     const temEndereco = Boolean(paciente.cep || paciente.bairro || endereco || cidadeUf);
 
-    function arquivar() {
-        if (
-            !confirm(
-                'Arquivar este paciente? Ele deixará de aparecer na lista de pacientes ativos, mas o histórico será mantido.',
-            )
-        ) {
-            return;
-        }
+    async function arquivar() {
+        const ok = await confirm({
+            title: 'Arquivar paciente?',
+            description:
+                'Ele deixará de aparecer na lista de pacientes ativos, mas o histórico será mantido.',
+            confirmText: 'Arquivar',
+            destructive: true,
+        });
+
+        if (!ok) return;
 
         router.delete(PacienteController.destroy.url(paciente.id));
     }

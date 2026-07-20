@@ -7,6 +7,7 @@ use App\Http\Controllers\ExameController;
 use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\PrescricaoController;
 use App\Http\Controllers\BuscaController;
+use App\Http\Controllers\ArquivadosController;
 
 Route::get('/', function () {
     return redirect()->route(auth()->check() ? 'dashboard' : 'login');
@@ -25,6 +26,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('prescricoes.imprimir');
     
     Route::get('busca/pacientes', [BuscaController::class, 'pacientes'])->name('busca.pacientes');
+
+    Route::get('arquivados', [ArquivadosController::class, 'index'])->name('arquivados.index');
+
+    Route::put('pacientes/{paciente}/restaurar', [PacienteController::class, 'restaurar'])
+        ->name('pacientes.restaurar')->withTrashed();
+
+    Route::put('consultas/{consulta}/restaurar', [ConsultaController::class, 'restaurar'])
+        ->name('consultas.restaurar')->withTrashed();
 
     Route::post('consultas/{consulta}/exame', [ExameController::class, 'salvar'])
         ->name('consultas.exame.salvar');
