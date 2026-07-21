@@ -105,8 +105,10 @@
             @endif
             <div class="info">
                 <h1>{{ config('clinica.nome') }}</h1>
-                <p>{{ config('clinica.profissional') }} — {{ config('clinica.crm') }}</p>
-                <p>{{ config('clinica.endereco') }}@if (config('clinica.telefone')) · {{ config('clinica.telefone') }}@endif</p>
+                <p>{{ config('clinica.profissional') }}@if (config('clinica.registro')) — {{ config('clinica.registro') }}@endif</p>
+                @if (config('clinica.endereco') || config('clinica.telefone'))
+                    <p>{{ config('clinica.endereco') }}@if (config('clinica.telefone')) · {{ config('clinica.telefone') }}@endif</p>
+                @endif
             </div>
         </div>
 
@@ -181,7 +183,7 @@
 
         <div class="assinatura">
             <div class="linha"></div>
-            {{ config('clinica.profissional') }} — {{ config('clinica.crm') }}
+            {{ config('clinica.profissional') }}@if (config('clinica.registro')) — {{ config('clinica.registro') }}@endif
         </div>
     </div>
 </body>
