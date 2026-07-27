@@ -44,6 +44,8 @@ interface Consulta {
     profissional: { id: number; name: string } | null;
     prescricoes: Prescricao[];
     exame: { dados: unknown } | null;
+    valor_pago: string | null;
+    forma_pagamento: string | null;
 }
 
 interface Props {
@@ -64,12 +66,24 @@ const VISAO_LABEL: Record<string, string> = {
     longe_perto: 'Longe e perto',
 };
 
+const PAGAMENTO_LABEL: Record<string, string> = {
+    dinheiro: 'Dinheiro',
+    pix: 'Pix',
+    debito: 'Cartão de débito',
+    credito: 'Cartão de crédito',
+    convenio: 'Convênio',
+};
+
+function formatarValor(valor: string | null): string | null {
+    if (valor === null || valor === '') return null;
+    return Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
 function formatarData(iso: string): string {
     return new Date(iso).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
 }
 
 function formatarDataHora(iso: string): string {
-    // atendido_em é wall-clock; forçamos UTC pra mostrar exatamente o que foi gravado
     return new Date(iso).toLocaleString('pt-BR', {
         dateStyle: 'short',
         timeStyle: 'short',
@@ -345,6 +359,11 @@ export default function ConsultaShow({ consulta }: Props) {
                             </Link>
                         </div>
                         <Dado label="Profissional" valor={consulta.profissional?.name} />
+                        <Dado label="Valor pago" valor={formatarValor(consulta.valor_pago)} />
+                        <Dado
+                            label="Forma de pagamento"
+                            valor={consulta.forma_pagamento ? PAGAMENTO_LABEL[consulta.forma_pagamento] : null}
+                        />
                         <Dado
                             label="Retorno em"
                             valor={consulta.retorno_em ? formatarData(consulta.retorno_em) : null}

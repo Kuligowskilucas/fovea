@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreConsultaRequest extends FormRequest
 {
@@ -18,6 +19,8 @@ class StoreConsultaRequest extends FormRequest
             'procedimento' => ['nullable', 'string', 'max:255'],
             'retorno_em' => ['nullable', 'date'],
             'observacoes' => ['nullable', 'string'],
+            'valor_pago' => ['nullable', 'numeric', 'min:0'],
+            'forma_pagamento' => ['nullable', 'string', Rule::in(['dinheiro', 'pix', 'debito', 'credito', 'convenio'])],
         ];
     }
 

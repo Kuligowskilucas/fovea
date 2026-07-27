@@ -8,6 +8,8 @@ use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\PrescricaoController;
 use App\Http\Controllers\BuscaController;
 use App\Http\Controllers\ArquivadosController;
+use App\Http\Controllers\FinanceiroLancamentoController;
+
 
 Route::get('/', function () {
     return redirect()->route(auth()->check() ? 'dashboard' : 'login');
@@ -37,6 +39,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('consultas/{consulta}/exame', [ExameController::class, 'salvar'])
         ->name('consultas.exame.salvar');
+
+    Route::get('financeiro/mes', [FinanceiroLancamentoController::class, 'index'])
+        ->name('financeiro.mes');
+    Route::put('financeiro/lancamentos/{lancamento}/efetivar', [FinanceiroLancamentoController::class, 'efetivar'])
+        ->name('financeiro.lancamentos.efetivar');
+    Route::put('financeiro/lancamentos/{lancamento}/desfazer', [FinanceiroLancamentoController::class, 'desfazer'])
+        ->name('financeiro.lancamentos.desfazer');
 });
 
 require __DIR__.'/settings.php';

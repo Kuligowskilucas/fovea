@@ -21,6 +21,8 @@ class Consulta extends Model
         'procedimento',
         'retorno_em',
         'observacoes',
+        'valor_pago',
+        'forma_pagamento',
     ];
 
     protected function casts(): array
@@ -28,6 +30,7 @@ class Consulta extends Model
         return [
             'atendido_em' => 'datetime',
             'retorno_em' => 'date',
+            'valor_pago' => 'decimal:2',
         ];
     }
 

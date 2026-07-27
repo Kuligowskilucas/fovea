@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import InputError from '@/components/input-error';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { CampoMoeda } from './campo-moeda';
 
 export interface Consulta {
     id: number;
@@ -9,6 +10,8 @@ export interface Consulta {
     procedimento: string | null;
     retorno_em: string | null;
     observacoes: string | null;
+    valor_pago: string | null;
+    forma_pagamento: string | null;
 }
 
 type Errors = Partial<Record<string, string>>;
@@ -40,18 +43,9 @@ function Campo({ label, name, error, children, className, obrigatorio }: {
     );
 }
 
-export function ConsultaFields({
-    consulta,
-    errors,
-}: {
-    consulta?: Consulta;
-    errors: Errors;
-}) {
-    // atendido_em é wall-clock: no editar mostramos exatamente o que foi gravado (slice do ISO,
-    // sem conversão de fuso); no criar, default = agora (hora local).
-    const atendidoDefault = consulta?.atendido_em
-        ? consulta.atendido_em.slice(0, 16)
-        : agoraLocal();
+export function ConsultaFields({ consulta, errors,}: { consulta?: Consulta; errors: Errors;}) {
+    
+    const atendidoDefault = consulta?.atendido_em ? consulta.atendido_em.slice(0, 16) : agoraLocal();
 
     return (
         <div className="grid gap-4 sm:grid-cols-2">
@@ -87,6 +81,31 @@ export function ConsultaFields({
                     type="date"
                     defaultValue={consulta?.retorno_em ? consulta.retorno_em.slice(0, 10) : ''}
                 />
+            </Campo>
+
+            <Campo label="Valor pago (R$)" name="valor_pago" error={errors.valor_pago}>
+                <CampoMoeda
+                    id="valor_pago"
+                    name="valor_pago"
+                    defaultValue={consulta?.valor_pago}
+                    placeholder="0,00"
+                />
+            </Campo>
+
+            <Campo label="Forma de pagamento" name="forma_pagamento" error={errors.forma_pagamento}>
+                <select
+                    id="forma_pagamento"
+                    name="forma_pagamento"
+                    defaultValue={consulta?.forma_pagamento ?? ''}
+                    className="h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                >
+                    <option value="">—</option>
+                    <option value="dinheiro">Dinheiro</option>
+                    <option value="pix">Pix</option>
+                    <option value="debito">Cartão de débito</option>
+                    <option value="credito">Cartão de crédito</option>
+                    <option value="convenio">Convênio</option>
+                </select>
             </Campo>
 
             <Campo
