@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Inertia\Inertia;
+use App\Http\Requests\Financeiro\LancamentoAvulsoRequest;
+use App\Models\FinanceiroCategoria;
+use App\Models\FinanceiroConta;
 
 class FinanceiroLancamentoController extends Controller
 {
@@ -45,7 +48,18 @@ class FinanceiroLancamentoController extends Controller
                 'receita' => $this->totais($lancamentos->where('natureza', 'receita')),
                 'despesa' => $this->totais($lancamentos->where('natureza', 'despesa')),
             ],
+            'categorias' => FinanceiroCategoria::orderBy('natureza')
+                ->orderBy('nome')
+                ->get(['id', 'natureza', 'nome']),
+            'contas' => FinanceiroConta::orderBy('nome')->get(['id', 'nome']),
         ]);
+    }
+
+    public function store(LancamentoAvulsoRequest $request)
+    {
+        FinanceiroLancamento::create($request->validated());
+
+        return back()->with('success', 'Lançamento criado.');
     }
 
     public function efetivar(

@@ -4,7 +4,11 @@ import Heading from '@/components/heading';
 import { dashboard } from '@/routes';
 import { useState } from 'react';
 import { SheetEfetivar } from './sheet-efetivar';
+import { Button } from '@/components/ui/button';
 import { mes as financeiroMes } from '@/routes/financeiro';
+import { index as contasIndex } from '@/routes/financeiro/contas';
+import { index as recorrenciasIndex } from '@/routes/financeiro/recorrencias';
+import { SheetLancamento } from './sheet-lancamento';
 
 
 interface Categoria {
@@ -37,10 +41,17 @@ interface Totais {
     efetivado: number;
 }
 
+interface Conta {
+    id: number;
+    nome: string;
+}
+
 interface Props {
     referencia: RefMes;
     lancamentos: Lancamento[];
     resumo: { receita: Totais; despesa: Totais };
+    categorias: Categoria[];
+    contas: Conta[];
 }
 
 function moeda(valor: number | string | null): string {
@@ -60,8 +71,13 @@ function linkMes(ref: { ano: number; mes: number }): string {
     return `${financeiroMes.url()}?ano=${ref.ano}&mes=${ref.mes}`;
 }
 
-export default function FinanceiroMes({ referencia, lancamentos, resumo }: Props) {
+export default function FinanceiroMes({ referencia, lancamentos, resumo, categorias, contas }: Props) {
     const [selecionado, setSelecionado] = useState<Lancamento | null>(null);
+    const [novoAberto, setNovoAberto] = useState(false);
+
+    const agora = new Date();
+    const ehMesAtual = referencia.ano === agora.getFullYear() && referencia.mes === agora.getMonth() + 1;
+    const dataPadrao = ehMesAtual ? new Date(agora.getTime() - agora.getTimezoneOffset() * 60000).toISOString().slice(0, 10) : `${referencia.ano}-${String(referencia.mes).padStart(2, '0')}-01`;
     const receitas = lancamentos.filter((l) => l.natureza === 'receita');
     const despesas = lancamentos.filter((l) => l.natureza === 'despesa');
 
@@ -73,7 +89,17 @@ export default function FinanceiroMes({ referencia, lancamentos, resumo }: Props
             <Head title={`Financeiro · ${referencia.rotulo}`} />
 
             <div className="flex h-full flex-1 flex-col gap-4 p-4">
-                <Heading variant="small" title="Financeiro" description="Lançamentos do mês" />
+                <div className="flex items-center justify-between gap-4">
+                    <Heading variant="small" title="Financeiro" description="Lançamentos do mês" />
+                    <div className="flex gap-2">
+                        <Button variant="secondary" size="sm" asChild>
+                            <Link href={recorrenciasIndex()}>Recorrências</Link>
+                        </Button>
+                        <Button variant="secondary" size="sm" asChild>
+                            <Link href={contasIndex()}>Contas</Link>
+                        </Button>
+                    </div>
+                </div>
 
                 <div className="flex items-center justify-between gap-2">
                     <Link
@@ -127,6 +153,10 @@ export default function FinanceiroMes({ referencia, lancamentos, resumo }: Props
                     </div>
                 </div>
 
+                <Button onClick={() => setNovoAberto(true)} className="w-full">
+                    Novo lançamento
+                </Button>
+
                 {lancamentos.length === 0 && (
                     <p className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
                         Nenhum lançamento neste mês.
@@ -142,6 +172,13 @@ export default function FinanceiroMes({ referencia, lancamentos, resumo }: Props
                 <SheetEfetivar
                     lancamento={selecionado}
                     onClose={() => setSelecionado(null)}
+                />
+                <SheetLancamento
+                    aberto={novoAberto}
+                    dataPadrao={dataPadrao}
+                    categorias={categorias}
+                    contas={contas}
+                    onClose={() => setNovoAberto(false)}
                 />
             </div>
         </>

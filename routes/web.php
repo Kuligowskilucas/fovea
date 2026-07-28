@@ -9,6 +9,8 @@ use App\Http\Controllers\PrescricaoController;
 use App\Http\Controllers\BuscaController;
 use App\Http\Controllers\ArquivadosController;
 use App\Http\Controllers\FinanceiroLancamentoController;
+use App\Http\Controllers\FinanceiroContaController;
+use App\Http\Controllers\FinanceiroRecorrenciaController;
 
 
 Route::get('/', function () {
@@ -46,6 +48,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('financeiro.lancamentos.efetivar');
     Route::put('financeiro/lancamentos/{lancamento}/desfazer', [FinanceiroLancamentoController::class, 'desfazer'])
         ->name('financeiro.lancamentos.desfazer');
+    Route::get('financeiro/contas', [FinanceiroContaController::class, 'index'])
+        ->name('financeiro.contas.index');
+    Route::post('financeiro/contas', [FinanceiroContaController::class, 'store'])
+        ->name('financeiro.contas.store');
+    Route::put('financeiro/contas/{conta}', [FinanceiroContaController::class, 'update'])
+        ->name('financeiro.contas.update');
+    Route::get('financeiro/recorrencias', [FinanceiroRecorrenciaController::class, 'index'])
+        ->name('financeiro.recorrencias.index');
+    Route::post('financeiro/recorrencias', [FinanceiroRecorrenciaController::class, 'store'])
+        ->name('financeiro.recorrencias.store');
+    Route::put('financeiro/recorrencias/{recorrencia}', [FinanceiroRecorrenciaController::class, 'update'])
+        ->name('financeiro.recorrencias.update');
+    Route::post('financeiro/lancamentos', [FinanceiroLancamentoController::class, 'store'])
+        ->name('financeiro.lancamentos.store');
 });
 
 require __DIR__.'/settings.php';
