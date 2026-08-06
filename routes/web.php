@@ -11,6 +11,7 @@ use App\Http\Controllers\ArquivadosController;
 use App\Http\Controllers\FinanceiroLancamentoController;
 use App\Http\Controllers\FinanceiroContaController;
 use App\Http\Controllers\FinanceiroRecorrenciaController;
+use App\Http\Controllers\PacienteArquivoController;
 
 
 Route::get('/', function () {
@@ -21,8 +22,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('pacientes', PacienteController::class);
     Route::get('consultas', [ConsultaController::class, 'index'])->name('consultas.index');
-    Route::resource('pacientes.consultas', ConsultaController::class)
-        ->shallow()->except(['index']);
+    Route::resource('pacientes.consultas', ConsultaController::class)->shallow()->except(['index']);
+    Route::get('consultas/{consulta}/prontuario', [ConsultaController::class, 'prontuario'])
+        ->name('consultas.prontuario');
+
     Route::resource('consultas.prescricoes', PrescricaoController::class)
         ->shallow()->only(['store', 'update', 'destroy'])
         ->parameters(['prescricoes' => 'prescricao']);
@@ -35,6 +38,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::put('pacientes/{paciente}/restaurar', [PacienteController::class, 'restaurar'])
         ->name('pacientes.restaurar')->withTrashed();
+    
+    Route::put('pacientes/{paciente}/nome', [PacienteController::class, 'atualizarNome'])
+        ->name('pacientes.atualizar-nome');
+
+    Route::post('pacientes/{paciente}/arquivos', [PacienteArquivoController::class, 'store'])
+        ->name('pacientes.arquivos.store');
+    Route::get('arquivos/{arquivo}/download', [PacienteArquivoController::class, 'download'])
+        ->name('pacientes.arquivos.download');
+    Route::delete('arquivos/{arquivo}', [PacienteArquivoController::class, 'destroy'])
+        ->name('pacientes.arquivos.destroy');
 
     Route::put('consultas/{consulta}/restaurar', [ConsultaController::class, 'restaurar'])
         ->name('consultas.restaurar')->withTrashed();

@@ -76,6 +76,20 @@ class ConsultaController extends Controller
         ]);
     }
 
+    public function prontuario(Consulta $consulta)
+    {
+        $consulta->load([
+            'paciente',
+            'profissional:id,name',
+            'prescricoes.medidas',
+            'exame',
+        ]);
+    
+        return view('consultas.prontuario', [
+            'consulta' => $consulta,
+        ]);
+    }
+
     public function edit(Consulta $consulta)
     {
         $consulta->load('paciente:id,nome_completo');

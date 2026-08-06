@@ -98,4 +98,9 @@ class Paciente extends Model
                 ];
             });
     }
+
+    public function arquivos(): HasMany
+    {
+        return $this->hasMany(PacienteArquivo::class)->latest();
+    }
 }

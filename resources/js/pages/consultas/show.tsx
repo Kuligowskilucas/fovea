@@ -2,6 +2,7 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState, type ReactNode } from 'react';
 import ConsultaController from '@/actions/App/Http/Controllers/ConsultaController';
 import PrescricaoController from '@/actions/App/Http/Controllers/PrescricaoController';
+import { SheetEditarNome } from './sheet-editar-nome';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { dashboard } from '@/routes';
@@ -10,6 +11,7 @@ import { edit, show as consultaShow } from '@/routes/consultas';
 import { imprimir } from '@/routes/prescricoes';
 import { PrescricaoForm, type PrescricaoRepetir } from './prescricao-form';
 import { ExamesForm } from './exames-form';
+import { Pencil } from 'lucide-react';
 import { useConfirm } from '@/hooks/use-confirm';
 
 
@@ -269,6 +271,7 @@ export default function ConsultaShow({ consulta }: Props) {
     const confirm = useConfirm();
 
     const [repetir, setRepetir] = useState<{ dados: PrescricaoRepetir; nonce: number } | null>(null);
+    const [editandoNome, setEditandoNome] = useState(false);
 
     function repetirPrescricao(p: Prescricao) {
         setRepetir({
@@ -341,6 +344,11 @@ export default function ConsultaShow({ consulta }: Props) {
                         <Button variant="secondary" asChild>
                             <Link href={edit(consulta.id)}>Editar</Link>
                         </Button>
+                        <Button variant="secondary" asChild>
+                            <a href={ConsultaController.prontuario.url(consulta.id)} target="_blank" rel="noopener">
+                                Imprimir prontuário
+                            </a>
+                        </Button>
                         <Button variant="outline" onClick={arquivar}>
                             Arquivar
                         </Button>
@@ -351,12 +359,22 @@ export default function ConsultaShow({ consulta }: Props) {
                     <div className="grid gap-3 sm:grid-cols-2">
                         <div className="grid gap-0.5">
                             <span className="text-xs text-muted-foreground">Paciente</span>
-                            <Link
-                                href={pacienteShow(consulta.paciente.id)}
-                                className="text-sm text-primary hover:underline"
-                            >
-                                {consulta.paciente.nome_completo}
-                            </Link>
+                            <div className="flex items-center gap-1.5">
+                                <Link
+                                    href={pacienteShow(consulta.paciente.id)}
+                                    className="text-sm text-primary hover:underline"
+                                >
+                                    {consulta.paciente.nome_completo}
+                                </Link>
+                                <button
+                                    type="button"
+                                    onClick={() => setEditandoNome(true)}
+                                    className="text-muted-foreground transition-colors hover:text-foreground"
+                                    aria-label="Editar nome do paciente"
+                                >
+                                    <Pencil className="size-3.5" />
+                                </button>
+                            </div>
                         </div>
                         <Dado label="Profissional" valor={consulta.profissional?.name} />
                         <Dado label="Valor pago" valor={formatarValor(consulta.valor_pago)} />
@@ -415,6 +433,7 @@ export default function ConsultaShow({ consulta }: Props) {
                     </Button>
                 </div>
             </div>
+            <SheetEditarNome paciente={editandoNome ? consulta.paciente : null} onClose={() => setEditandoNome(false)}/>
         </>
     );
 }

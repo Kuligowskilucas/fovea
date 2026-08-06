@@ -51,6 +51,7 @@ class PacienteController extends Controller
         {
             $paciente->load([
                 'consultas' => fn ($query) => $query->latest('atendido_em'),
+                'arquivos',
             ]);
     
             $refracoes = $paciente->refracoes();
@@ -94,5 +95,16 @@ class PacienteController extends Controller
         return redirect()
             ->route('arquivados.index')
             ->with('success', 'Paciente restaurado.');
+    }
+
+    public function atualizarNome(Request $request, Paciente $paciente)
+    {
+        $validated = $request->validate([
+            'nome_completo' => ['required', 'string', 'max:255'],
+        ]);
+
+        $paciente->update($validated);
+
+        return back()->with('success', 'Nome atualizado com sucesso.');
     }
 }

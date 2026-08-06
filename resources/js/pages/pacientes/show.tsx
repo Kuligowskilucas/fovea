@@ -8,6 +8,8 @@ import { edit, index, show as pacienteShow } from '@/routes/pacientes';
 import { create as novaConsulta } from '@/routes/pacientes/consultas';
 import { show as consultaShow } from '@/routes/consultas';
 import { useConfirm } from '@/hooks/use-confirm';
+import { ArquivosSecao, type Arquivo } from './arquivos-secao';
+
 
 interface Consulta {
     id: number;
@@ -59,6 +61,7 @@ interface Paciente {
     uf: string | null;
     observacoes: string | null;
     consultas: Consulta[];
+    arquivos: Arquivo[];
 }
 
 interface Props {
@@ -189,11 +192,7 @@ export default function PacienteShow({ paciente, ultima_refracao, refracoes }: P
                     <Heading
                         variant="small"
                         title={paciente.nome_completo}
-                        description={
-                            paciente.nome_social
-                                ? `Nome social: ${paciente.nome_social}`
-                                : 'Detalhe do paciente'
-                        }
+                        description={paciente.nome_social ? `Nome social: ${paciente.nome_social}` : 'Detalhe do paciente'}
                     />
                     <div className="flex flex-wrap gap-2">
                         <Button asChild>
@@ -339,6 +338,8 @@ export default function PacienteShow({ paciente, ultima_refracao, refracoes }: P
                     <h2 className="text-sm font-medium text-muted-foreground">
                         Histórico de consultas
                     </h2>
+
+                    <ArquivosSecao pacienteId={paciente.id} arquivos={paciente.arquivos} />
 
                     {paciente.consultas.length === 0 && (
                         <p className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
