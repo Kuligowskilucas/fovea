@@ -2,7 +2,9 @@
 
 A practice-management system for an optometry clinic: patient records, a structured optometric exam, and prescription printing. Built around the workflow of a single practitioner who does almost everything from her phone, so the interface is mobile-first throughout.
 
-The app is running in production with a real user. This repository holds the application source only. No credentials, patient data, or environment configuration is committed here.
+Freelance project, contracted and paid, built between April and June 2026 and delivered to an optometry clinic in Curitiba. In production with a real user.
+
+This repository holds the application source only. No credentials, patient data, or environment configuration is committed here.
 
 ## Features
 
@@ -102,4 +104,4 @@ Portuguese, mobile-first interface. The whole product was designed for the phone
 
 ## Status
 
-In production and under active development. The code is open as a portfolio piece; the production instance and its data are not part of this repository.
+In production since June 2026 at an optometry clinic in Curitiba. Delivered as paid freelance work and published here as a portfolio reference, with the client's permission.
