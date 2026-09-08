@@ -6,7 +6,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\Encoders\JpegEncoder;
+use Intervention\Image\Encoders\WebpEncoder;
 use Intervention\Image\ImageManager;
 
 class ProcessarImagemProduto
@@ -37,10 +37,11 @@ class ProcessarImagemProduto
         $imagem = $this->manager->decodePath($arquivo->getRealPath())
             ->scaleDown(width: self::LARGURA_MAX);
 
-        // Normaliza tudo pra JPEG: tamanho previsível independente do formato enviado.
-        $encoded = $imagem->encode(new JpegEncoder(quality: self::QUALIDADE));
+        // Normaliza tudo pra WebP: menor que JPEG na mesma qualidade e preserva
+        // transparência de PNG, que o JPEG achatava em preto.
+        $encoded = $imagem->encode(new WebpEncoder(quality: self::QUALIDADE));
 
-        $caminho = self::DIRETORIO.'/'.Str::uuid().'.jpg';
+        $caminho = self::DIRETORIO.'/'.Str::uuid().'.webp';
 
         Storage::disk(self::DISCO)->put($caminho, (string) $encoded);
 

@@ -12,6 +12,7 @@ use App\Http\Controllers\FinanceiroLancamentoController;
 use App\Http\Controllers\FinanceiroContaController;
 use App\Http\Controllers\FinanceiroRecorrenciaController;
 use App\Http\Controllers\PacienteArquivoController;
+use App\Http\Controllers\CategoriaProdutoController;
 use App\Http\Controllers\ProdutoController;
 
 
@@ -78,6 +79,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('financeiro.lancamentos.store');
 
     Route::resource('produtos', ProdutoController::class)->except(['show']);
+    // Inflector PT: sem isso o parâmetro sai {categorias_produto} (plural) e o
+    // route model binding de $categoriaProduto não resolve.
+    Route::resource('categorias-produto', CategoriaProdutoController::class)
+        ->except(['show'])
+        ->parameters(['categorias-produto' => 'categoria_produto']);
 });
 
 require __DIR__.'/settings.php';

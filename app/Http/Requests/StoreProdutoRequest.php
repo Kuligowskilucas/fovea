@@ -21,7 +21,14 @@ class StoreProdutoRequest extends FormRequest
             'descricao' => ['nullable', 'string'],
             'preco' => ['nullable', 'numeric', 'min:0'], // nulo = sob consulta
             'ativo' => ['boolean'],
-            'imagem' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:5120'], // 5 MB (em KB)
+            'imagem' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,png,webp',
+                'max:5120', // 5 MB (em KB)
+                // Teto de pixels antes do GD decodificar: a VM tem 1 GB de RAM.
+                'dimensions:max_width=6000,max_height=6000',
+            ],
         ];
     }
 
