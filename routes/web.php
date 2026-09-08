@@ -12,6 +12,7 @@ use App\Http\Controllers\FinanceiroLancamentoController;
 use App\Http\Controllers\FinanceiroContaController;
 use App\Http\Controllers\FinanceiroRecorrenciaController;
 use App\Http\Controllers\PacienteArquivoController;
+use App\Http\Controllers\ProdutoController;
 
 
 Route::get('/', function () {
@@ -75,6 +76,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('financeiro.recorrencias.update');
     Route::post('financeiro/lancamentos', [FinanceiroLancamentoController::class, 'store'])
         ->name('financeiro.lancamentos.store');
+
+    Route::resource('produtos', ProdutoController::class)->except(['show']);
 });
 
 require __DIR__.'/settings.php';
