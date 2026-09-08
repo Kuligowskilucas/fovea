@@ -35,6 +35,16 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        // A vitrine pública roda fora do auth e a resposta pode ser cacheada por
+        // proxy/CDN. Nenhum estado autenticado entra no payload dela — nem o user
+        // (que seria da Pati se ela abrisse a vitrine logada), nem flash de sessão.
+        if ($this->rotaPublica($request)) {
+            return [
+                ...parent::share($request),
+                'name' => config('app.name'),
+            ];
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -47,5 +57,11 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn () => $request->session()->get('error'),
             ],
         ];
+    }
+
+    /** Rotas servidas sem autenticação, que não podem receber props sensíveis. */
+    private function rotaPublica(Request $request): bool
+    {
+        return $request->routeIs('catalogo.*');
     }
 }

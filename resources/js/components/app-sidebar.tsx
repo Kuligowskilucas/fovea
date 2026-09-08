@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { LayoutGrid, Users, CalendarClock, Archive, Wallet } from 'lucide-react';
+import { LayoutGrid, Users, CalendarClock, Archive, Wallet, Glasses, QrCode } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -15,10 +15,12 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 
-import { index as pacientesIndex } from '@/routes/pacientes';
-import { index as consultasIndex } from '@/routes/consultas';
 import { index as arquivadosIndex } from '@/routes/arquivados';
+import { qrcode as catalogoQrcode } from '@/routes/catalogo';
+import { index as consultasIndex } from '@/routes/consultas';
 import { mes as financeiroMes } from '@/routes/financeiro';
+import { index as pacientesIndex } from '@/routes/pacientes';
+import { index as produtosIndex } from '@/routes/produtos';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
@@ -41,6 +43,16 @@ const mainNavItems: NavItem[] = [
         title: 'Financeiro',
         href: financeiroMes(),
         icon: Wallet,
+    },
+    {
+        title: 'Produtos',
+        href: produtosIndex(),
+        icon: Glasses,
+    },
+    {
+        title: 'QR do catálogo',
+        href: catalogoQrcode(),
+        icon: QrCode,
     },
     {
         title: 'Arquivados',

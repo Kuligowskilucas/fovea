@@ -4,6 +4,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeTheme } from '@/hooks/use-appearance';
 import AppLayout from '@/layouts/app-layout';
 import AuthLayout from '@/layouts/auth-layout';
+import CatalogoLayout from '@/layouts/catalogo-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { ConfirmProvider } from '@/hooks/use-confirm';
 
@@ -17,6 +18,9 @@ createInertiaApp({
                 return null;
             case name.startsWith('auth/'):  
                 return AuthLayout;
+            // Vitrine pública: nunca o AppLayout, que renderiza a sidebar admin.
+            case name.startsWith('catalogo/'):
+                return CatalogoLayout;
             case name.startsWith('settings/'):
                 return [AppLayout, SettingsLayout];
             default:

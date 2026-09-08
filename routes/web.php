@@ -12,6 +12,8 @@ use App\Http\Controllers\FinanceiroLancamentoController;
 use App\Http\Controllers\FinanceiroContaController;
 use App\Http\Controllers\FinanceiroRecorrenciaController;
 use App\Http\Controllers\PacienteArquivoController;
+use App\Http\Controllers\CatalogoPublicoController;
+use App\Http\Controllers\CatalogoQrCodeController;
 use App\Http\Controllers\CategoriaProdutoController;
 use App\Http\Controllers\ProdutoController;
 
@@ -19,6 +21,10 @@ use App\Http\Controllers\ProdutoController;
 Route::get('/', function () {
     return redirect()->route(auth()->check() ? 'dashboard' : 'login');
 })->name('home');
+
+// Vitrine pública — única rota fora do auth. Ver CatalogoPublicoController e a
+// exceção de props em HandleInertiaRequests::share().
+Route::get('catalogo', [CatalogoPublicoController::class, 'index'])->name('catalogo.index');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -77,6 +83,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('financeiro.recorrencias.update');
     Route::post('financeiro/lancamentos', [FinanceiroLancamentoController::class, 'store'])
         ->name('financeiro.lancamentos.store');
+
+    // Antes do resource: 'qrcode' não pode ser capturado como {produto}.
+    Route::get('produtos/qrcode', [CatalogoQrCodeController::class, 'index'])
+        ->name('catalogo.qrcode');
 
     Route::resource('produtos', ProdutoController::class)->except(['show']);
     // Inflector PT: sem isso o parâmetro sai {categorias_produto} (plural) e o
