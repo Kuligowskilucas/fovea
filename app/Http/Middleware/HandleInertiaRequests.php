@@ -62,6 +62,6 @@ class HandleInertiaRequests extends Middleware
     /** Rotas servidas sem autenticação, que não podem receber props sensíveis. */
     private function rotaPublica(Request $request): bool
     {
-        return $request->routeIs('catalogo.*');
+        return $request->routeIs('catalogo.index');
     }
 }
